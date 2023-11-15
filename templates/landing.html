@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spott.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <style>
+        .map {
+            background: url("https://media.discordapp.net/attachments/1172181712550248518/1174252691355078656/b787320a4743e7c5ce9c36028834b378.png?ex=6566eb0a&is=6554760a&hm=71b88b07aa9fa3d40a2e0133c9c38926d5b28ed2c60ed57c1d665d0529924660&=&width=750&height=437");
+            background-size:cover;
+            width:1000px;
+            height:500px;
+        }
+    </style>
+</head>
+<body class="overflow-hidden text-black map">
+    <section class="map w-[100vw] h-[100vh] flex flex-col items-center justify-center gap-10">
+        <form action="/" method="post" class="flex items-center flex-col gap-10 bg-white rounded-lg w-80 h-80">
+            <h1 data-aos-duration="1500ms" data-aos="fade-up" class="text-[40px] font-extrabold">Spott.</h1>
+            <input class="absolute hidden" id="lat">
+            <input class="absolute hidden" id="long">
+            <button type="submit" class="font-bold bg-gray-300 rounded-lg w-[10vw] h-[5vh] text-black" onclick="getLocation()">
+                Locate me
+            </button>
+        </form>
+        <script>
+            var x = document.getElementById("lat");
+            var y = document.getElementById("long");
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                }
+            }
+        
+            function showPosition(position) {
+                x.value = position.coords.latitude;
+                y.value = position.coords.longitude;
+            }
+        </script>
+    </section>
+</body>
+<script>
+    AOS.init();
+  </script>
+</html>
