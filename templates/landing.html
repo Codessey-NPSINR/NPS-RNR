@@ -18,20 +18,20 @@
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.1/css/all.css">
 </head>
 <body class="overflow-hidden text-black map">
-    <section class="map w-[100vw] h-[100vh] flex flex-col items-center justify-center gap-10">
+    <section class="map w-[1600px] h-[900px] flex flex-col items-center justify-center gap-10">
         <form action="/spots" method="post" class="flex items-center flex-col gap-10 bg-white rounded-lg w-80 h-80 shadow-2xl">
             <h1 data-aos-duration="1500ms" data-aos="fade-up" class="pt-[32px] text-[40px] font-extrabold mt-[10px]">SPOTT.</h1>
             <input class="hidden absolute"  type="text" name="latitude" id="lat" placeholder="Latitude: Locate first" value="">
             <input class="hidden absolute" type="text" name="longitude" id="long" placeholder="Longitude: Locate first" value="">
             <div class="bg-gray-300 w-72 rounded-full h-[4px] mt-[-15px]"></div>
             <p class="text-center">Spott takes your location and finds the closest parking spot</p>
-            <button type="submit" class="w-8 h-8 bg-black ml-[12rem] rounded-full mt-[-8px] text-white flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
-
+            <button type="submit" class="w-8 h-8 bg-black ml-[12rem] rounded-full mt-[-8px] text-white flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button> 
+            <input type="checkbox" id = 'disabled' name="disabled" value="False" onclick="TrueFalse()">  
+                Disability(if any) 
         </form>
         <button class="font-bold bg-black text-white rounded-lg w-[10vw] h-[5vh] text-black mt-[-7rem]" onclick="getLocation()">
             Locate me
         </button>
-        <input type="checkbox">
         <script>
             var x = document.getElementById("lat");
             var y = document.getElementById("long");
@@ -46,7 +46,14 @@
             function showPosition(position) {
                 x.value = position.coords.latitude;
                 y.value = position.coords.longitude;
+                
                 console.log(posi.coord.latitude)
+            }
+
+            function TrueFalse(){
+                var disabled = document.getElementById("disabled")
+                if (disabled.value=="False") {disabled.value="True"}
+                else {disabled.value="False"}
             }
         </script>
     </section>

@@ -7,41 +7,58 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        setInterval(function() {
+            location.reload();
+        }, 30000);
+    </script>
 </head>
 <body class="overflow-hidden">
     <div id="map" class="w-[100vw] h-[100vh]"></div>
     <div id="addresses"></div>
 
+
     <script>
-        var map = L.map('map');
-        var locations = {{ locations | tojson | safe }};
-        var markers = [];
-    
-        // Create markers for each location
-        locations.forEach(function (location) {
-            // Check if latitude and longitude are defined
-            if (location.lat !== undefined && location.lng !== undefined) {
-                var marker = L.marker([location.lat, location.lng]).addTo(map);
-                marker.bindPopup(location.address); // Display address as a popup
-                markers.push(marker);
-            } else {
-                console.error('Invalid location:', location);
-            }
-        });
-    
-        // Get LatLng bounds for all markers
-        var bounds = new L.LatLngBounds();
-        markers.forEach(function (marker) {
-            bounds.extend(marker.getLatLng());
-        });
-    
-        // Set the map view to fit the bounds
-        map.fitBounds(bounds);
-    
-        // Add OpenStreetMap tiles
+        var map = L.map('map').setView([0, 0], 2);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
+        var d_locations = {{ dlocations | tojson | safe }}
+        var markers = [];
+
+        // Create markers for each disabled parking location
+        d_locations.forEach(function (location) {
+            var icon = L.icon({
+                iconUrl: '{{url_for("static",filename="Disabled_Marker.png")}}',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+
+            var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(map);
+            marker.bindPopup(location.address); // Display address as a popup
+            markers.push(marker);
+        });
+
+        // Create markers for each regular parking location
+        // Use a different icon for regular parking
+        var locations = {{ locations | tojson | safe}};
+
+        locations.forEach(function (location) {
+            var icon = L.icon({
+                iconUrl: '{{url_for("static",filename="NormalMarker.png")}}',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+
+            var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(map);
+            marker.bindPopup(location.address); // Display address as a popup
+            markers.push(marker);
+        });
+
+        map.fitBounds(bounds);
     </script>
     
 </body>
