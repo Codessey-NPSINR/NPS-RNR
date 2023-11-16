@@ -1,11 +1,32 @@
 import requests
 from requests.structures import CaseInsensitiveDict
+from opencage.geocoder import OpenCageGeocode
 
-url = "https://api.geoapify.com/v2/places?categories=commercial.supermarket&filter=rect%3A10.716463143326969%2C48.755151258420966%2C10.835314015356737%2C48.680903341613316&limit=20&apiKey=7d054aedbf7841b4b2154afb427cfd8b"
+def GetParking(lat, long, rad):
+        
 
-headers = CaseInsensitiveDict()
-headers["Accept"] = "application/json"
+    key2 = '1643b4cf13a64d90b17d34a4a8f2b3ff'
+    KEY = '7d054aedbf7841b4b2154afb427cfd8b'
 
-resp = requests.get(url, headers=headers)
+    url = f"https://api.geoapify.com/v2/places?categories=parking&filter=circle:{long},{lat},{rad}&bias=proximity:{long},{lat}&limit=1&apiKey={KEY}"
 
-print(resp.text)
+    headers = CaseInsensitiveDict()
+    headers["Accept"] = "application/json"
+
+    resp = requests.get(url, headers=headers)
+    Response = eval(resp.text)
+
+
+    places = []
+
+    for item in Response["features"]:
+        lat = item["properties"]["lat"]
+        lon = item["properties"]["lon"]
+        gc = OpenCageGeocode(key2)
+
+
+        for place in gc.reverse_geocode(lat,lon):
+            print(place["formatted"])
+            places.append({"lat":lat,"long":lon,"address":place["formatted"]})
+
+    return (lat, lon)

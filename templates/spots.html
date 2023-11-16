@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Markers with Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="overflow-hidden">
+    <div id="map" class="w-[100vw] h-[100vh]"></div>
+    <div id="addresses"></div>
+
+    <script>
+        var map = L.map('map');
+        var locations = {{ locations | tojson | safe }};
+        var markers = [];
+    
+        // Create markers for each location
+        locations.forEach(function (location) {
+            // Check if latitude and longitude are defined
+            if (location.lat !== undefined && location.lng !== undefined) {
+                var marker = L.marker([location.lat, location.lng]).addTo(map);
+                marker.bindPopup(location.address); // Display address as a popup
+                markers.push(marker);
+            } else {
+                console.error('Invalid location:', location);
+            }
+        });
+    
+        // Get LatLng bounds for all markers
+        var bounds = new L.LatLngBounds();
+        markers.forEach(function (marker) {
+            bounds.extend(marker.getLatLng());
+        });
+    
+        // Set the map view to fit the bounds
+        map.fitBounds(bounds);
+    
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+    </script>
+    
+</body>
+</html>

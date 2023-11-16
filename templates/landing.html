@@ -25,16 +25,18 @@
             <input class="hidden absolute" type="text" name="longitude" id="long" placeholder="Longitude: Locate first" value="">
             <div class="bg-gray-300 w-72 rounded-full h-[4px] mt-[-15px]"></div>
             <p class="text-center">Spott takes your location and finds the closest parking spot</p>
-            <input >Disabled
             <button type="submit" class="w-8 h-8 bg-black ml-[12rem] rounded-full mt-[-8px] text-white flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
 
         </form>
         <button class="font-bold bg-black text-white rounded-lg w-[10vw] h-[5vh] text-black mt-[-7rem]" onclick="getLocation()">
             Locate me
         </button>
+        <input type="checkbox" >
         <script>
             var x = document.getElementById("lat");
             var y = document.getElementById("long");
+            console.log(x.value);
+            console.log(y.value)
             function getLocation() {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(showPosition);
