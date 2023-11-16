@@ -1,188 +1,259 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <title>Address Selection</title>
+    <title>Place Autocomplete</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script>
+      
+      function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 40.749933, lng: -73.98633 },
+          zoom: 13,
+          mapTypeControl: false,
+        });
+        const card = document.getElementById("pac-card");
+        const input = document.getElementById("pac-input");
+        const biasInputElement = document.getElementById("use-location-bias");
+        const strictBoundsInputElement =
+          document.getElementById("use-strict-bounds");
+        const options = {
+          fields: ["formatted_address", "geometry", "name"],
+          strictBounds: false,
+          types: ["establishment"],
+        };
+
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
+
+        const autocomplete = new google.maps.places.Autocomplete(
+          input,
+          options
+        );
+
+        
+        autocomplete.bindTo("bounds", map);
+
+        const infowindow = new google.maps.InfoWindow();
+        const infowindowContent = document.getElementById("infowindow-content");
+
+        infowindow.setContent(infowindowContent);
+
+        const marker = new google.maps.Marker({
+          map,
+          anchorPoint: new google.maps.Point(0, -29),
+        });
+
+        autocomplete.addListener("place_changed", () => {
+          infowindow.close();
+          marker.setVisible(false);
+
+          const place = autocomplete.getPlace();
+
+          if (!place.geometry || !place.geometry.location) {
+            
+            window.alert(
+              "No details available for input: '" + place.name + "'"
+            );
+            return;
+          }
+
+          
+          if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+          } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(17);
+          }
+
+          marker.setPosition(place.geometry.location);
+          marker.setVisible(true);
+          infowindowContent.children["place-name"].textContent = place.name;
+          infowindowContent.children["place-address"].textContent =
+            place.formatted_address;
+          infowindow.open(map, marker);
+        });
+
+        
+        function setupClickListener(id, types) {
+          const radioButton = document.getElementById(id);
+
+          radioButton.addEventListener("click", () => {
+            autocomplete.setTypes(types);
+            input.value = "";
+          });
+        }
+
+        setupClickListener("changetype-all", []);
+        setupClickListener("changetype-address", ["address"]);
+        setupClickListener("changetype-establishment", ["establishment"]);
+        setupClickListener("changetype-geocode", ["geocode"]);
+        setupClickListener("changetype-cities", ["(cities)"]);
+        setupClickListener("changetype-regions", ["(regions)"]);
+        biasInputElement.addEventListener("change", () => {
+          if (biasInputElement.checked) {
+            autocomplete.bindTo("bounds", map);
+          } else {
+            autocomplete.unbind("bounds");
+            autocomplete.setBounds({
+              east: 180,
+              west: -180,
+              north: 90,
+              south: -90,
+            });
+            strictBoundsInputElement.checked = biasInputElement.checked;
+          }
+
+          input.value = "";
+        });
+        strictBoundsInputElement.addEventListener("change", () => {
+          autocomplete.setOptions({
+            strictBounds: strictBoundsInputElement.checked,
+          });
+          if (strictBoundsInputElement.checked) {
+            biasInputElement.checked = strictBoundsInputElement.checked;
+            autocomplete.bindTo("bounds", map);
+          }
+
+          input.value = "";
+        });
+      }
+
+      window.initMap = initMap;
+    </script>
     <style>
+      #map {
+        height: 100%;
+      }
+
+      /* 
+       * Optional: Makes the sample page fill the window. 
+       */
+      html,
       body {
+        height: 100%;
         margin: 0;
+        padding: 0;
       }
 
-      .sb-title {
-        position: relative;
-        top: -12px;
-        font-family: Roboto, sans-serif;
-        font-weight: 500;
-      }
-
-      .sb-title-icon {
-        position: relative;
-        top: -5px;
-      }
-
-      .card-container {
-        display: flex;
-        height: 500px;
-        width: 600px;
-      }
-
-      .panel {
-        background: white;
-        width: 300px;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-      }
-
-      .half-input-container {
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .half-input {
-        max-width: 120px;
-      }
-
-      .map {
-        width: 300px;
-      }
-
-      h2 {
-        margin: 0;
-        font-family: Roboto, sans-serif;
-      }
-
-      input {
-        height: 30px;
-      }
-
-      input {
-        border: 0;
-        border-bottom: 1px solid black;
-        font-size: 14px;
-        font-family: Roboto, sans-serif;
-        font-style: normal;
-        font-weight: normal;
-      }
-
-      input:focus::placeholder {
-        color: white;
-      }
-
-      .button-cta {
-        height: 40px;
-        width: 40%;
-        background: #3367d6;
-        color: white;
+      #description {
+        font-family: Roboto;
         font-size: 15px;
-        text-transform: uppercase;
-        font-family: Roboto, sans-serif;
+        font-weight: 300;
+      }
+
+      #infowindow-content .title {
+        font-weight: bold;
+      }
+
+      #infowindow-content {
+        display: none;
+      }
+
+      #map #infowindow-content {
+        display: inline;
+      }
+
+      .pac-card {
+        background-color: #fff;
         border: 0;
-        border-radius: 3px;
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.48);
-        cursor: pointer;
+        border-radius: 2px;
+        box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
+        margin: 10px;
+        padding: 0 0.5em;
+        font: 400 18px Roboto, Arial, sans-serif;
+        overflow: hidden;
+        font-family: Roboto;
+        padding: 0;
+      }
+
+      #pac-container {
+        padding-bottom: 12px;
+        margin-right: 12px;
+      }
+
+      .pac-controls {
+        display: inline-block;
+        padding: 5px 11px;
+      }
+
+      .pac-controls label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 400px;
+      }
+
+      #pac-input:focus {
+        border-color: #4d90fe;
+      }
+
+      #title {
+        color: #fff;
+        background-color: #4d90fe;
+        font-size: 25px;
+        font-weight: 500;
+        padding: 6px 12px;
       }
     </style>
-    <script>
-    "use strict";
-
-    function initMap() {
-      const CONFIGURATION = {
-        "ctaTitle": "Checkout",
-        "mapOptions": {"center":{"lat":37.4221,"lng":-122.0841},"fullscreenControl":true,"mapTypeControl":false,"streetViewControl":true,"zoom":11,"zoomControl":true,"maxZoom":22,"mapId":""},
-        "mapsApiKey": "AIzaSyBQASXg3b3507xJJ092_gP16_zuinnPMaE",
-        "capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":true}
-      };
-      const componentForm = [
-        'location',
-        'locality',
-        'administrative_area_level_1',
-        'country',
-        'postal_code',
-      ];
-
-      const getFormInputElement = (component) => document.getElementById(component + '-input');
-      const map = new google.maps.Map(document.getElementById("gmp-map"), {
-        zoom: CONFIGURATION.mapOptions.zoom,
-        center: { lat: 37.4221, lng: -122.0841 },
-        mapTypeControl: false,
-        fullscreenControl: CONFIGURATION.mapOptions.fullscreenControl,
-        zoomControl: CONFIGURATION.mapOptions.zoomControl,
-        streetViewControl: CONFIGURATION.mapOptions.streetViewControl
-      });
-      const marker = new google.maps.Marker({map: map, draggable: false});
-      const autocompleteInput = getFormInputElement('location');
-      const autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
-        fields: ["address_components", "geometry", "name"],
-        types: ["address"],
-      });
-      autocomplete.addListener('place_changed', function () {
-        marker.setVisible(false);
-        const place = autocomplete.getPlace();
-        if (!place.geometry) {
-          // User entered the name of a Place that was not suggested and
-          // pressed the Enter key, or the Place Details request failed.
-          window.alert('No details available for input: \'' + place.name + '\'');
-          return;
-        }
-        renderAddress(place);
-        fillInAddress(place);
-      });
-
-      function fillInAddress(place) {  // optional parameter
-        const addressNameFormat = {
-          'street_number': 'short_name',
-          'route': 'long_name',
-          'locality': 'long_name',
-          'administrative_area_level_1': 'short_name',
-          'country': 'long_name',
-          'postal_code': 'short_name',
-        };
-        const getAddressComp = function (type) {
-          for (const component of place.address_components) {
-            if (component.types[0] === type) {
-              return component[addressNameFormat[type]];
-            }
-          }
-          return '';
-        };
-        getFormInputElement('location').value = getAddressComp('street_number') + ' '
-                  + getAddressComp('route');
-        for (const component of componentForm) {
-          // Location field is handled separately above as it has different logic.
-          if (component !== 'location') {
-            getFormInputElement(component).value = getAddressComp(component);
-          }
-        }
-      }
-
-      function renderAddress(place) {
-        map.setCenter(place.geometry.location);
-        marker.setPosition(place.geometry.location);
-        marker.setVisible(true);
-      }
-    }
-    </script>
   </head>
   <body>
-    <div class="card-container">
-      <div class="panel">
-        <div>
-          <img class="sb-title-icon" src="https://fonts.gstatic.com/s/i/googlematerialicons/location_pin/v5/24px.svg" alt="">
-          <span class="sb-title">Address Selection</span>
+    <div class="pac-card" id="pac-card">
+      <div>
+        <div id="title">Autocomplete search</div>
+        <div id="type-selector" class="pac-controls">
+          <input
+            type="radio"
+            name="type"
+            id="changetype-all"
+            checked="checked"
+          />
+          <label for="changetype-all">All</label>
+
+          <input type="radio" name="type" id="changetype-establishment" />
+          <label for="changetype-establishment">establishment</label>
+
+          <input type="radio" name="type" id="changetype-address" />
+          <label for="changetype-address">address</label>
+
+          <input type="radio" name="type" id="changetype-geocode" />
+          <label for="changetype-geocode">geocode</label>
+
+          <input type="radio" name="type" id="changetype-cities" />
+          <label for="changetype-cities">(cities)</label>
+
+          <input type="radio" name="type" id="changetype-regions" />
+          <label for="changetype-regions">(regions)</label>
         </div>
-        <input type="text" placeholder="Address" id="location-input"/>
-        <input type="text" placeholder="Apt, Suite, etc (optional)"/>
-        <input type="text" placeholder="City" id="locality-input"/>
-        <div class="half-input-container">
-          <input type="text" class="half-input" placeholder="State/Province" id="administrative_area_level_1-input"/>
-          <input type="text" class="half-input" placeholder="Zip/Postal code" id="postal_code-input"/>
+        <br />
+        <div id="strict-bounds-selector" class="pac-controls">
+          <input type="checkbox" id="use-location-bias" value="" checked />
+          <label for="use-location-bias">Bias to map viewport</label>
+
+          <input type="checkbox" id="use-strict-bounds" value="" />
+          <label for="use-strict-bounds">Strict bounds</label>
         </div>
-        <input type="text" placeholder="Country" id="country-input"/>
-        <button class="button-cta">Checkout</button>
       </div>
-      <div class="map" id="gmp-map"></div>
+      <div id="pac-container">
+        <input id="pac-input" type="text" placeholder="Enter a location" />
+      </div>
     </div>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQASXg3b3507xJJ092_gP16_zuinnPMaE&libraries=places&callback=initMap&solution_channel=GMP_QB_addressselection_v1_cABC" async defer></script>
+    <div id="map"></div>
+    <div id="infowindow-content">
+      <span id="place-name" class="title"></span><br />
+      <span id="place-address"></span>
+    </div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQASXg3b3507xJJ092_gP16_zuinnPMaE&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
   </body>
 </html>
