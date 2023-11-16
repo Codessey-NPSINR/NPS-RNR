@@ -9,23 +9,29 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <style>
         .map {
-            background: url("https://media.discordapp.net/attachments/1172181712550248518/1174252691355078656/b787320a4743e7c5ce9c36028834b378.png?ex=6566eb0a&is=6554760a&hm=71b88b07aa9fa3d40a2e0133c9c38926d5b28ed2c60ed57c1d665d0529924660&=&width=750&height=437");
+            background: url("https://media.discordapp.net/attachments/1172181712550248518/1174255371410477178/image-2SGaxhKm8-transformed.png?ex=6566ed89&is=65547889&hm=f740b6604c5f0b5dfea0fe59dfb17b6608b27eb6d5055341fe0f06f30bb61c84&=&width=1202&height=701");
             background-size:cover;
             width:1000px;
             height:500px;
         }
     </style>
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.2.1/css/all.css">
 </head>
 <body class="overflow-hidden text-black map">
     <section class="map w-[100vw] h-[100vh] flex flex-col items-center justify-center gap-10">
-        <form action="/" method="post" class="flex items-center flex-col gap-10 bg-white rounded-lg w-80 h-80">
-            <h1 data-aos-duration="1500ms" data-aos="fade-up" class="text-[40px] font-extrabold">Spott.</h1>
-            <input class="absolute hidden" id="lat">
-            <input class="absolute hidden" id="long">
-            <button type="submit" class="font-bold bg-gray-300 rounded-lg w-[10vw] h-[5vh] text-black" onclick="getLocation()">
-                Locate me
-            </button>
+        <form action="/spots" method="post" class="flex items-center flex-col gap-10 bg-white rounded-lg w-80 h-80 shadow-2xl">
+            <h1 data-aos-duration="1500ms" data-aos="fade-up" class="pt-[32px] text-[40px] font-extrabold mt-[10px]">SPOTT.</h1>
+            <input class="hidden absolute"  type="text" name="latitude" id="lat" placeholder="Latitude: Locate first" value="">
+            <input class="hidden absolute" type="text" name="longitude" id="long" placeholder="Longitude: Locate first" value="">
+            <div class="bg-gray-300 w-72 rounded-full h-[4px] mt-[-15px]"></div>
+            <p class="text-center">Spott takes your location and finds the closest parking spot</p>
+            <input >Disabled
+            <button type="submit" class="w-8 h-8 bg-black ml-[12rem] rounded-full mt-[-8px] text-white flex items-center justify-center"><i class="fa-solid fa-arrow-right"></i></button>
+
         </form>
+        <button class="font-bold bg-black text-white rounded-lg w-[10vw] h-[5vh] text-black mt-[-7rem]" onclick="getLocation()">
+            Locate me
+        </button>
         <script>
             var x = document.getElementById("lat");
             var y = document.getElementById("long");
@@ -38,6 +44,7 @@
             function showPosition(position) {
                 x.value = position.coords.latitude;
                 y.value = position.coords.longitude;
+                console.log(posi.coord.latitude)
             }
         </script>
     </section>
