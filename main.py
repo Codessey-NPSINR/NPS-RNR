@@ -81,5 +81,10 @@ def spots():
 def auto():
     return render_template('auto.html')
 
+@app.route('/sel')
+def sel():
+    return render_template("sel2.html")
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

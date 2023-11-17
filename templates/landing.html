@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spott.</title>
+    <script src="{{url_for('static',filename='index.js')}}"></script>
+    <link src="{{url_for('static',filename='main.css')}}"></link>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -29,9 +31,13 @@
             <input type="checkbox" id = 'disabled' name="disabled" value="False" onclick="TrueFalse()">  
                 Disability(if any) 
         </form>
-        <button class="font-bold bg-black text-white rounded-lg w-[10vw] h-[5vh] text-black mt-[-7rem]" onclick="getLocation()">
+        <!-- <button class="font-bold bg-black text-white rounded-lg w-[10vw] h-[5vh] text-black mt-[-7rem]" onclick="getLocation()">
             Locate me
-        </button>
+        </button> -->
+
+        <!-- Autocomplee shit -->
+        <div class="autocomplete-container" id="autocomplete-container"></div>
+
         <script>
             var x = document.getElementById("lat");
             var y = document.getElementById("long");
@@ -56,6 +62,86 @@
                 else {disabled.value="False"}
             }
         </script>
+
+        <!-- Auto script -->
+        
+
+        <!-- Auto style -->
+        
+        <style>
+    body {
+      font: 16px;
+      background: #f3f5f6;
+    }
+  
+    .autocomplete-container {
+      margin-bottom: 20px;
+    }
+  
+    .input-container {
+      display: flex;
+      position: relative;
+    }
+  
+    .input-container input {
+      flex: 1;
+      outline: none;
+  
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      padding-right: 31px;
+      font-size: 16px;
+    }
+  
+    .autocomplete-items {
+      position: absolute;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0px 2px 10px 2px rgba(0, 0, 0, 0.1);
+      border-top: none;
+      background-color: #fff;
+  
+      z-index: 99;
+      top: calc(100% + 2px);
+      left: 0;
+      right: 0;
+    }
+  
+    .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+    }
+  
+    .autocomplete-items div:hover {
+      /*when hovering an item:*/
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  
+    .autocomplete-items .autocomplete-active {
+      /*when navigating through the items using the arrow keys:*/
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  
+    .clear-button {
+      color: rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+  
+      position: absolute;
+      right: 5px;
+      top: 0;
+  
+      height: 100%;
+      display: none;
+      align-items: center;
+    }
+  
+    .clear-button.visible {
+      display: flex;
+    }
+  
+    .clear-button:hover {
+      color: rgba(0, 0, 0, 0.6);
+    }
+        </style>
     </section>
 </body>
 <script>
