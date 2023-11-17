@@ -1,32 +1,6 @@
 import requests
-from requests.structures import CaseInsensitiveDict
-from opencage.geocoder import OpenCageGeocode
 
-
-def GetParking(lat, long, rad, disabled = False):
-    key2 = '1643b4cf13a64d90b17d34a4a8f2b3ff'
-    KEY = '7d054aedbf7841b4b2154afb427cfd8b'
-
-    url = f"https://api.geoapify.com/v2/places?categories=parking&filter=circle:{long},{lat},{rad}&bias=proximity:{long},{lat}&limit=10&apiKey={KEY}"
-
-    headers = CaseInsensitiveDict()
-    headers["Accept"] = "application/json"
-
-    resp = requests.get(url, headers=headers)
-    Response = eval(resp.text)
-
-    
-    places = []
-    for item in Response["features"]:
-        
-        lat = item["properties"]["lat"]
-        lon = item["properties"]["lon"]
-        gc = OpenCageGeocode(key2)
-
-
-        for place in gc.reverse_geocode(lat,lon):
-            places.append({"lat":lat,"long":lon,"address":place["formatted"]})
-
-    return places
-
-
+url = "https://api.geoapify.com/v1/geocode/search?text=38%20Upper%20Montagu%20Street%2C%20London%20W1H%201LJ%2C%20United%20Kingdom&format=json&apiKey=50ad96accad1408592932b5061e1bc1e"
+          
+response = requests.get(url)
+print(response.json())

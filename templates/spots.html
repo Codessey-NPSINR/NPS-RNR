@@ -18,48 +18,76 @@
     <div id="addresses"></div>
 
 
+
     <script>
-        var map = L.map('map').setView([0, 0], 2);
+        var map = L.map('map');
+        
+        // Create an array to hold all markers
+        var markers = [];
+    
+        // Define custom icons for regular, disabled, and electric vehicle parking
+        var regularIcon = L.icon({
+            iconUrl: 'https://media.discordapp.net/attachments/1172181712550248518/1174624115647315968/Locationmarkerblue.png?ex=656844f4&is=6555cff4&hm=ec0642c80f0b78a31966b96c44baa137e22b707514af887e8b146fc56bf4d3e5&=&width=62&height=102',
+            iconSize: [32, 52.77],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+
+        var disabledIcon = L.icon({
+            iconUrl: 'https://media.discordapp.net/attachments/1172181712550248518/1174631137012879441/DisabledMarker.png?ex=65684b7e&is=6555d67e&hm=4bcf07fed022970149bd2e0c6c3cd912c1c005a2c0ed5a23d12668f0030bd9c7&=&width=62&height=102',
+            iconSize: [32, 52.77],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+
+        var electricIcon = L.icon({
+            iconUrl: 'https://media.discordapp.net/attachments/1172181712550248518/1174557151348400210/EVCharginMarker.png?ex=65680697&is=65559197&hm=47f7c2728e9aaf88e4e8b107b1388efb43e11a32cc7aec25dccaacdb963e5385&=&width=625&height=625',
+            iconSize: [32, 52.77],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+        });
+
+        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        var d_locations = {{ dlocations | tojson | safe }}
-        var markers = [];
+        var locations = {{locations | tojson | safe}};
 
-        // Create markers for each disabled parking location
-        d_locations.forEach(function (location) {
-            var icon = L.icon({
-                iconUrl: '{{url_for("static",filename="Disabled_Marker.png")}}',
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32]
+        var dlocations = {{dlocations | tojson | safe}};
+
+        var elocations = {{eplaces | tojson | safe}};
+
+    
+        // Function to create markers for each location type
+        function createMarkers(locations, icon) {
+            locations.forEach(function (location) {
+                var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(map);
+                marker.bindPopup(`<p>${location.address}</p><a href="${location.url}" target="_blank">View on Google Maps</a>`); // Display address and link in a popup
+                markers.push(marker);
+    
+                // Add a click event to open the link when clicking on the marker
+                marker.on('click', function () {
+                    window.open(location.url, '_blank');
+                });
             });
-
-            var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(map);
-            marker.bindPopup(location.address); // Display address as a popup
-            markers.push(marker);
+        }
+    
+        // Create markers for each type of parking
+        createMarkers(locations, regularIcon);
+        createMarkers(dlocations, disabledIcon);
+        createMarkers(elocations, electricIcon);
+    
+        // Get LatLng bounds for all markers
+        var bounds = new L.LatLngBounds();
+        markers.forEach(function (marker) {
+            bounds.extend(marker.getLatLng());
         });
-
-        // Create markers for each regular parking location
-        // Use a different icon for regular parking
-        var locations = {{ locations | tojson | safe}};
-
-        locations.forEach(function (location) {
-            var icon = L.icon({
-                iconUrl: '{{url_for("static",filename="NormalMarker.png")}}',
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32]
-            });
-
-            var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(map);
-            marker.bindPopup(location.address); // Display address as a popup
-            markers.push(marker);
-        });
-
+    
+        // Set the map view to fit the bounds
         map.fitBounds(bounds);
     </script>
+
     
 </body>
 </html>

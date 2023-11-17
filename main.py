@@ -27,39 +27,16 @@ def spots():
         rad = 750
         print(request.form)
         d = request.form.get("disabled")
-        if d:
-            url = f"https://api.geoapify.com/v2/places?categories=parking&conditions=wheelchair.yes&filter=circle:{long},{lat},{rad}&bias=proximity:{long},{lat}&limit=10&apiKey={KEY}"
-        else:
-            url = f"https://api.geoapify.com/v2/places?categories=parking&filter=circle:{long},{lat},{rad}&bias=proximity:{long},{lat}&limit=10&apiKey={KEY}"
-
-        print(rad)
-        headers = CaseInsensitiveDict()
-        headers["Accept"] = "application/json"
-        resp = requests.get(url, headers=headers)
-        Response = eval(resp.text)
-
-
-        url = f"https://api.geoapify.com/v2/places?categories=parking&conditions=wheelchair.yes&filter=circle:{long},{lat},{rad + 1000}&bias=proximity:{long},{lat}&limit=10&apiKey={KEY}"
-
+        e = request.form.get("electric")
         url1 = f"https://api.geoapify.com/v2/places?categories=parking&filter=circle:{long},{lat},{rad}&bias=proximity:{long},{lat}&limit=10&apiKey={KEY}"
-
-        headers = CaseInsensitiveDict()
-        headers["Accept"] = "application/json"
-        resp = requests.get(url, headers=headers)
-        Response = eval(resp.text)
-        
-        d_places = []
-
-        for item in Response["features"]:
-            lat = item["properties"]["lat"]
-            lon = item["properties"]["lon"]
-            gc = OpenCageGeocode(key2)
-
-
-            for place in gc.reverse_geocode(lat,lon):
-                d_places.append({"lat":lat,"lng":long,"address":place["formatted"],"url":f"http://maps.google.com/maps?z=12&t=m&q=loc:{lat}+{long}"})
+        url2 = f"https://api.geoapify.com/v2/places?categories=parking&conditions=wheelchair.yes&filter=circle:{long},{lat},{rad + 2000}&bias=proximity:{long},{lat}&limit=10&apiKey={KEY}"
+        url3 = f"https://api.geoapify.com/v2/places?categories=service.vehicle.charging_station&filter=circle:{long},{lat},{rad + 2000}&bias=proximity:{long},{lat}&limit=10&apiKey={KEY}"
 
         places = []
+        dplaces = []
+        eplaces = []
+        
+        headers = CaseInsensitiveDict()
         resp1 = requests.get(url1,headers=headers)
         Response1 = eval(resp1.text)
 
@@ -67,24 +44,37 @@ def spots():
             lat = item["properties"]["lat"]
             lon = item["properties"]["lon"]
             gc = OpenCageGeocode(key2)
-
-
             for place in gc.reverse_geocode(lat,lon):
                 places.append({"lat":lat,"lng":long,"address":place["formatted"],"url":f"http://maps.google.com/maps?z=12&t=m&q=loc:{lat}+{long}"})
 
+        if d:
+            headers = CaseInsensitiveDict()
+            resp1 = requests.get(url2,headers=headers)
+            Response1 = eval(resp1.text)
 
-        return render_template("spots.html",dlocations=d_places,locations = places)
+            for item in Response1["features"]:
+                lat = item["properties"]["lat"]
+                lon = item["properties"]["lon"]
+                gc = OpenCageGeocode(key2)
+                for place in gc.reverse_geocode(lat,lon):
+                    places.append({"lat":lat,"lng":long,"address":place["formatted"],"url":f"http://maps.google.com/maps?z=12&t=m&q=loc:{lat}+{long}"})
+
+        if e:
+            headers = CaseInsensitiveDict()
+            resp1 = requests.get(url3,headers=headers)
+            Response1 = eval(resp1.text)
+
+            for item in Response1["features"]:
+                lat = item["properties"]["lat"]
+                lon = item["properties"]["lon"]
+                gc = OpenCageGeocode(key2)
+                for place in gc.reverse_geocode(lat,lon):
+                    eplaces.append({"lat":lat,"lng":long,"address":place["formatted"],"url":f"http://maps.google.com/maps?z=12&t=m&q=loc:{lat}+{long}"})
+    
+        return render_template("spots.html",dlocations=dplaces,locations = places,eplaces=eplaces)
     else:
         return redirect(url_for('main'))
         
-@app.route('/auto')
-def auto():
-    return render_template('auto.html')
-
-@app.route('/sel')
-def sel():
-    return render_template("sel2.html")
-
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
