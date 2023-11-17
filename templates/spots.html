@@ -57,19 +57,14 @@
         var dlocations = {{dlocations | tojson | safe}};
 
         var elocations = {{eplaces | tojson | safe}};
-
     
         // Function to create markers for each location type
         function createMarkers(locations, icon) {
             locations.forEach(function (location) {
                 var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(map);
-                marker.bindPopup(`<p>${location.address}</p><a href="${location.url}" target="_blank">View on Google Maps</a>`); // Display address and link in a popup
+                var popupContent = `<p>${location.address}</p><a href="http://maps.google.com/maps?q=${location.lat},${location.lng}" target="_blank">View on Google Maps</a>`;
+                marker.bindPopup(popupContent); // Display address and link in a popup
                 markers.push(marker);
-    
-                // Add a click event to open the link when clicking on the marker
-                marker.on('click', function () {
-                    window.open(location.url, '_blank');
-                });
             });
         }
     

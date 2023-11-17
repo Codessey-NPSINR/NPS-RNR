@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spott.</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <style>
         .map {
             background: url("https://media.discordapp.net/attachments/1172181712550248518/1174912787613483019/Safeimagekit-resized-img.png?ex=656951cd&is=6556dccd&hm=15123db3ff7034e45506092d319b9baf36c1a1cb3eaf778ce28ad0eedb6937c6&=&width=1246&height=701");
@@ -19,12 +17,9 @@
 </head>
 <body class="overflow-hidden text-black map">
   
-    <!-- Autocomplee shit -->
-    
-
     <section class="map w-[1600px] h-[900px] flex flex-col items-center justify-center gap-10">
-        <form action="/spots" method="post" class="flex items-center flex-col gap-10 bg-white rounded-lg w-[400px] h-[500px] h-80 shadow-2xl">
-            <h1 data-aos-duration="1500ms" data-aos="fade-up" class="pt-[32px] text-[40px] font-extrabold mt-[10px]">SPOTT.</h1>
+        <form action="/spots" method="post" class="flex items-center flex-col gap-10 bg-white mt-[240px] rounded-[15px] px-10 w-[400px] h-[470px] h-80 shadow-2xl">
+            <h1 class="pt-[32px] text-[40px] font-extrabold mt-[10px]">SPOTT.</h1>
             <div class="bg-gray-300 w-72 rounded-full h-[4px] mt-[-15px]"></div>
             <input class="hidden absolute"  type="text" name="latitude" id="lat" placeholder="Latitude: Locate first" value="">
             <input class="hidden absolute" type="text" name="longitude" id="long" placeholder="Longitude: Locate first" value="">
@@ -39,8 +34,7 @@
                     Electric Vehicle
               </div>  
         </form>
-
-        <button class="font-bold bg-black text-white rounded-lg w-[10vw] h-[5vh] text-black mt-[-7rem]" onclick="getLocation()">
+        <button class="font-bold translate-y-[-280px] bg-black text-white rounded-lg w-[10vw] h-[5vh] text-black z-[10000]" onclick="getLocation()">
           Locate me
       </button>
       <script>
